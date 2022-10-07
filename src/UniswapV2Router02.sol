@@ -31,6 +31,10 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
     }
 
     // **** ADD LIQUIDITY ****
+    // returns the amounts the liquidity provider should deposit to have a ratio equal to the current ratio between reserves.
+    // amountADesired: amounts the liquidity provider wants to deposit.
+    // They are also the maximum amounts of A and B to be deposited.
+    // amountAMin: minimum acceptable amounts to deposit
     function _addLiquidity(
         address tokenA,
         address tokenB,
@@ -106,6 +110,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
             amountAMin,
             amountBMin
         );
+        //To save gas we don't do this by asking the factory, but using the library function pairFor
         address pair = UniswapV2Library.pairFor(factory, tokenA, tokenB);
         TransferHelper.safeTransferFrom(tokenA, msg.sender, pair, amountA);
         TransferHelper.safeTransferFrom(tokenB, msg.sender, pair, amountB);
@@ -166,7 +171,11 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
         returns (uint256 amountA, uint256 amountB)
     {
         address pair = UniswapV2Library.pairFor(factory, tokenA, tokenB);
-        IUniswapV2Pair(pair).TransferFrom(msg.sender, pair, liquidity); // send liquidity to pair
+        IUniswapV2Pair(pair).transferFrom(msg.sender, pair, liquidity); // send liquidity to pair
+        // UniswapV2Pair's burn function handles paying the user back the tokens
+        //********
+        // Is there a difference between casting to Interface and to a contract instance
+        //*******
         (uint256 amount0, uint256 amount1) = IUniswapV2Pair(pair).burn(to);
         (address token0, ) = UniswapV2Library.sortTokens(tokenA, tokenB);
         (amountA, amountB) = tokenA == token0
@@ -210,6 +219,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
         TransferHelper.safeTransferETH(to, amountETH);
     }
 
+    //allow users without ether to withdraw from the pool
     function removeLiquidityWithPermit(
         address tokenA,
         address tokenB,
@@ -225,7 +235,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
     ) external virtual override returns (uint256 amountA, uint256 amountB) {
         address pair = UniswapV2Library.pairFor(factory, tokenA, tokenB);
         uint256 value = approveMax ? type(uint256).max : liquidity;
-        IUniswapV2Pair(pair).Permit(
+        IUniswapV2Pair(pair).permit(
             msg.sender,
             address(this),
             value,
@@ -264,7 +274,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
     {
         address pair = UniswapV2Library.pairFor(factory, token, WETH);
         uint256 value = approveMax ? type(uint256).max : liquidity;
-        IUniswapV2Pair(pair).Permit(
+        IUniswapV2Pair(pair).permit(
             msg.sender,
             address(this),
             value,
@@ -324,7 +334,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
     ) external virtual override returns (uint256 amountETH) {
         address pair = UniswapV2Library.pairFor(factory, token, WETH);
         uint256 value = approveMax ? type(uint256).max : liquidity;
-        IUniswapV2Pair(pair).Permit(
+        IUniswapV2Pair(pair).permit(
             msg.sender,
             address(this),
             value,

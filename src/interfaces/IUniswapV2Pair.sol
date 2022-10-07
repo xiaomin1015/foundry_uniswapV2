@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.5.0;
 
-interface IUniswapV2Pair {
+import "./IUniswapV2ERC20.sol";
+
+interface IUniswapV2Pair is IUniswapV2ERC20 {
     event Mint(address indexed sender, uint256 amount0, uint256 amount1);
     event Burn(
         address indexed sender,
@@ -26,23 +28,7 @@ interface IUniswapV2Pair {
     function token0() external view returns (address);
 
     function token1() external view returns (address);
-   /*
-    function TransferFrom(
-        address from,
-        address to,
-        uint256 value
-    ) external returns (bool);
 
-    function Permit(
-        address owner,
-        address spender,
-        uint256 value,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external;
-   */
     function getReserves()
         external
         view

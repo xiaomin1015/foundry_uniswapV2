@@ -5,10 +5,13 @@ import "./interfaces/IUniswapV2Factory.sol";
 import "./UniswapV2Pair.sol";
 
 contract UniswapV2Factory is IUniswapV2Factory {
+    //The feeTo address accumulates the liquidity tokens for the protocol fee
+    //feeToSetter is the address allowed to change feeTo to a different address.
     address public feeTo;
     address public feeToSetter;
 
     mapping(address => mapping(address => address)) public getPair;
+    //an array that includes all the addresses of pair exchanges created by this factory.
     address[] public allPairs;
 
     constructor(address _feeToSetter) public {
@@ -24,6 +27,7 @@ contract UniswapV2Factory is IUniswapV2Factory {
         returns (address pair)
     {
         require(tokenA != tokenB, "UniswapV2: IDENTICAL_ADDRESSES");
+        // for deterministic address
         (address token0, address token1) = tokenA < tokenB
             ? (tokenA, tokenB)
             : (tokenB, tokenA);
