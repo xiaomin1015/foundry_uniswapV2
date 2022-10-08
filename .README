@@ -1,0 +1,20 @@
+# implement uniswap V2 in Foundry framework and use forge to test
+
+
+###  solidityversion
+using solidity version: 0.8.17
+
+###  build
+```
+        forge build
+```       
+
+### Run the test:
+```
+        forge test
+```
+or more test options, check this <a href="https://book.getfoundry.sh/forge/tests" class="internal-link" target="_blank">tutorial</a>.
+see test coverage
+```
+        forge coverage
+```
